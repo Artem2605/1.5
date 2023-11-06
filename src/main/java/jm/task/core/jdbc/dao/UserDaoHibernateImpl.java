@@ -2,20 +2,28 @@ package jm.task.core.jdbc.dao;
 
 import jm.task.core.jdbc.model.User;
 import jm.task.core.jdbc.util.Util;
-import org.hibernate.*;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 public class UserDaoHibernateImpl implements UserDao {
-    private static String createUsersTable = "CREATE TABLE IF NOT EXISTS users (\n" +
+
+    private static final String createUsersTable = "CREATE TABLE IF NOT EXISTS users (\n" +
             "  `ID` INT NOT NULL AUTO_INCREMENT,\n" +
             "  `name` VARCHAR(45) NOT NULL,\n" +
             "  `lastName` VARCHAR(45) NOT NULL,\n" +
             "  `age` TINYINT NOT NULL,\n" +
             "  PRIMARY KEY (`ID`))";
-    private static String dropUsersTable = "DROP TABLE IF EXISTS users";
+
+    private static final String dropUsersTable = "DROP TABLE IF EXISTS users";//todo: finale (IDE подсказывает..)
     private static List<User> allUsers = null;
-    private static final SessionFactory SESSION_FACTORY = new Util().getSessionFactory();
+    private static SessionFactory SESSION_FACTORY;// = new Util().getSessionFactory();//todo: инициализация - делается через конструктор. В Spring - как раз с учетом singleton
+
+    public UserDaoHibernateImpl() {
+        if (SESSION_FACTORY == null) SESSION_FACTORY = new Util().getSessionFactory();
+    }
 
     @Override
     public void createUsersTable() {
@@ -40,6 +48,8 @@ public class UserDaoHibernateImpl implements UserDao {
     }
 
     @Override
+    @Transactional
+//todo: ..не настаиваю, конечно. Но это аннотироваться в Hibernate (где нужно) @Transactional - правильный (единственно правильный) подход
     public void saveUser(String name, String lastName, Byte age) {
         User user = new User(name, lastName, age);
         try (Session session = SESSION_FACTORY.getCurrentSession()) {
