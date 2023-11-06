@@ -10,16 +10,16 @@ import java.util.List;
 
 public class UserDaoHibernateImpl implements UserDao {
 
-    private static final String createUsersTable = "CREATE TABLE IF NOT EXISTS users (\n" +
+    private static final String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS users (\n" +
             "  `ID` INT NOT NULL AUTO_INCREMENT,\n" +
             "  `name` VARCHAR(45) NOT NULL,\n" +
             "  `lastName` VARCHAR(45) NOT NULL,\n" +
             "  `age` TINYINT NOT NULL,\n" +
             "  PRIMARY KEY (`ID`))";
 
-    private static final String dropUsersTable = "DROP TABLE IF EXISTS users";//todo: finale (IDE подсказывает..)
+    private static final String DROP_TABLE = "DROP TABLE IF EXISTS users";
     private static List<User> allUsers = null;
-    private static SessionFactory SESSION_FACTORY;// = new Util().getSessionFactory();//todo: инициализация - делается через конструктор. В Spring - как раз с учетом singleton
+    private static SessionFactory SESSION_FACTORY;
 
     public UserDaoHibernateImpl() {
         if (SESSION_FACTORY == null) SESSION_FACTORY = new Util().getSessionFactory();
@@ -29,7 +29,7 @@ public class UserDaoHibernateImpl implements UserDao {
     public void createUsersTable() {
         try (Session session = SESSION_FACTORY.getCurrentSession()) {
             session.beginTransaction();
-            session.createSQLQuery(createUsersTable).executeUpdate();
+            session.createSQLQuery(CREATE_TABLE).executeUpdate();
             session.getTransaction().commit();
         } catch (Exception e) {
             e.printStackTrace();
@@ -40,7 +40,7 @@ public class UserDaoHibernateImpl implements UserDao {
     public void dropUsersTable() {
         try (Session session = SESSION_FACTORY.getCurrentSession()) {
             session.beginTransaction();
-            session.createSQLQuery(dropUsersTable).executeUpdate();
+            session.createSQLQuery(DROP_TABLE).executeUpdate();
             session.getTransaction().commit();
         } catch (Exception e) {
             e.printStackTrace();

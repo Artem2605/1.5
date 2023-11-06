@@ -17,7 +17,7 @@ public class UserServiceImpl implements UserService {
 
     public void saveUser(String name, String lastName, Byte age) {
         user.saveUser(name, lastName, age);
-        //todo: service все-таки долен писать в консоль, что происходит. Например, в Log... или в сильно упрощенном варианте,  System.out.println("Saved User: " + name);
+        System.out.printf("User %s saved", name);
     }
 
     public void removeUserById(Long id) {
