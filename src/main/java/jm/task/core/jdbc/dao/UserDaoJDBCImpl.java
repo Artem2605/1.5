@@ -2,43 +2,48 @@ package jm.task.core.jdbc.dao;
 
 import jm.task.core.jdbc.model.User;
 import jm.task.core.jdbc.util.Util;
+
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.sql.*;
 
 public class UserDaoJDBCImpl implements UserDao {
-    public UserDaoJDBCImpl() {
+    private static String createUsersTable = "CREATE TABLE IF NOT EXISTS users (\n" +
+            "  `ID` INT NOT NULL AUTO_INCREMENT,\n" +
+            "  `name` VARCHAR(45) NOT NULL,\n" +
+            "  `lastName` VARCHAR(45) NOT NULL,\n" +
+            "  `age` TINYINT NOT NULL,\n" +
+            "  PRIMARY KEY (`ID`))";
+    private static String dropUsersTable = "DROP TABLE IF EXISTS users";
+    private static String saveUser = "INSERT INTO users (name, lastname, age) Values (?, ?, ?)";
+    private static String cleanUsersTable = "DELETE FROM users";
+    private static String removeUserById = "DELETE FROM users WHERE ID = ?";
+    private static String getAllUsers = "SELECT * FROM users";
+    private static List<User> allUsers = new ArrayList<>();
+    private static Connection connection = null;
 
+    public UserDaoJDBCImpl() {
+        connection = new Util().getConnection();
     }
 
     public void createUsersTable() {
-        try (Connection connection = Util.getConnection(); Statement statement = connection.createStatement()) {
-            String command = "CREATE TABLE users (\n" +
-                    "  `ID` INT NOT NULL AUTO_INCREMENT,\n" +
-                    "  `name` VARCHAR(45) NOT NULL,\n" +
-                    "  `lastName` VARCHAR(45) NOT NULL,\n" +
-                    "  `age` TINYINT NOT NULL,\n" +
-                    "  PRIMARY KEY (`ID`))";
-            statement.executeUpdate(command);
+        try (Statement statement = connection.createStatement()) {
+            statement.executeUpdate(createUsersTable);
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
-
 
     public void dropUsersTable() {
-        try (Connection connection = Util.getConnection(); Statement statement = connection.createStatement()) {
-            String command = "DROP TABLE IF EXISTS users";
-            statement.executeUpdate(command);
+        try (Statement statement = connection.createStatement()) {
+            statement.executeUpdate(dropUsersTable);
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public void saveUser(String name, String lastName, byte age) {
-        try (Connection connection = Util.getConnection()) {
-            String command = "INSERT INTO users (name, lastname, age) Values (?, ?, ?)";
-            PreparedStatement preparedStatement  = connection.prepareStatement(command);
+    public void saveUser(String name, String lastName, Byte age) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(saveUser)) {
             preparedStatement.setString(1, name);
             preparedStatement.setString(2, lastName);
             preparedStatement.setByte(3, age);
@@ -48,10 +53,8 @@ public class UserDaoJDBCImpl implements UserDao {
         }
     }
 
-    public void removeUserById(long id) {
-        try (Connection connection = Util.getConnection()) {
-            String command = "DELETE FROM users WHERE ID = ?";
-            PreparedStatement preparedStatement  = connection.prepareStatement(command);
+    public void removeUserById(Long id) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(removeUserById)) {
             preparedStatement.setLong(1, id);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
@@ -60,28 +63,25 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public List<User> getAllUsers() {
-        List<User> list = new ArrayList<>();
-        try (Connection connection = Util.getConnection(); Statement statement = connection.createStatement()) {
-            String command = "SELECT * FROM users";
-            ResultSet resultSet = statement.executeQuery(command);
+        try (Statement statement = connection.createStatement()) {
+            ResultSet resultSet = statement.executeQuery(getAllUsers);
             while (resultSet.next()) {
                 User user = new User();
-                user.setId((long) resultSet.getInt(1));
+                user.setId(Long.valueOf(resultSet.getInt(1)));
                 user.setName(resultSet.getString(2));
                 user.setLastName(resultSet.getString(3));
-                user.setAge((byte) resultSet.getInt(4));
-                list.add(user);
+                user.setAge(Byte.valueOf((byte) resultSet.getInt(4)));
+                allUsers.add(user);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return list;
+        return allUsers;
     }
 
     public void cleanUsersTable() {
-        try (Connection connection = Util.getConnection(); Statement statement = connection.createStatement()) {
-            String command = "DELETE FROM users";
-            statement.executeUpdate(command);
+        try (Statement statement = connection.createStatement()) {
+            statement.executeUpdate(cleanUsersTable);
         } catch (SQLException e) {
             e.printStackTrace();
         }

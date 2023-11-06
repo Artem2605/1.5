@@ -15,12 +15,11 @@ public class UserServiceImpl implements UserService {
         user.dropUsersTable();
     }
 
-    public void saveUser(String name, String lastName, byte age) {
+    public void saveUser(String name, String lastName, Byte age) {
         user.saveUser(name, lastName, age);
-        System.out.printf("User с именем - %s добавлен в базу данных\n", name);
     }
 
-    public void removeUserById(long id) {
+    public void removeUserById(Long id) {
         user.removeUserById(id);
     }
 
