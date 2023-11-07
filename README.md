@@ -1,3 +1,8 @@
-# Hi there, I'm [Artem](https://daniilshat.ru/) ![](https://github.com/blackcater/blackcater/raw/main/images/Hi.gif) 
-### KATA Academy student
-## This project connect MySQL with Hibernate
+## Требования к классам приложения:
+
+ UserHibernateDaoImpl должен реализовывать интерефейс UserDao <br />
+ В класс Util должна быть добавлена конфигурация для Hibernate ( рядом с JDBC), без использования xml <br />
+ Service на этот раз использует реализацию dao через Hibernate <br />
+ Методы создания и удаления таблицы пользователей в классе UserHibernateDaoImpl должны быть реализованы с помощью SQL <br />
+
+ ## Алгоритм приложения и операции не меняются в сравнении с предыдущим заданием 1.4
